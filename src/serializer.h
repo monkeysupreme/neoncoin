@@ -1,10 +1,11 @@
 #ifndef NEONCOIN_SERIALIZE_H
 #define NEONCOIN_SERIALIZE_H
 
-#include "uint256.h"
+#include "crypto/uint256.h"
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 namespace neon
 {
@@ -20,8 +21,26 @@ public:
 
     static void WriteUint256(std::vector<uint8_t>& out, const uint256& v);
     static uint256 ReadUint256(const std::vector<uint8_t>& in, size_t& offset);
+
+    static void WriteBytes(std::vector<uint8_t>& out,
+                           const std::vector<uint8_t>& bytes);
+
+    static std::vector<uint8_t> ReadBytes(const std::vector<uint8_t>& in,
+                                          size_t& offset);
+};
+
+class Serializable
+{
+public:
+    virtual ~Serializable() = default;
+
+    virtual void Serialize(std::vector<uint8_t>& out) const = 0;
+    virtual void Deserialize(std::vector<uint8_t>& in, size_t& offset) = 0;
+
+    std::vector<uint8_t> ToBytes() const;
 };
 
 } // namespace neon
 
-#endif // NEONCOIN_SERIALIZE_H
+#endif
+
